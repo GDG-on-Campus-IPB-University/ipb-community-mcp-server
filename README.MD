@@ -59,10 +59,10 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
     }
     ```
     - Pastikan merubah kata [ROOT PATH] menjadi folder tempat clone repository
-    contoh: Jika repository diletakkan di desktop (WINDOWS: C:\Users\<YourUsername>\Desktop\, MAC: /Users/<YourUsername>/Desktop)
+    contoh: Jika repository diletakkan di desktop (WINDOWS: C:\Users\USERNAME\Desktop, MAC: /Users/USERNAME/Desktop)
     - Restart Aplikasi Claude Desktop
 
-4.  **Allow MCP **
+4.  **Allow MCP**
     - Pada Bubble Input Chat AI disamping tombol upload file, tekan tombol setting, pastikan ada tools ipb-community-service
     - Jika ada, nyalakan seluruh tools
     - Jika tidak ada, Install tidak berhasil, silahkan ulangi step-step.
