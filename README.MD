@@ -34,18 +34,30 @@ Daftar nama anggota tim yang berkontribusi dalam pengembangan proyek ini.
 
 Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
 
-1.  **Clone Repositori**
+1. **Install Node.js pada device**
+    - Buka Website Node.js (https://nodejs.org/en/download)
+    - Pilih versi sesuai OS
+    - Download dan Install 
+    - Jika mengalami kendala saat penginstalan, harap belajar di Youtube
+
+2.  **Clone Repositori**
     ```bash
     git clone [https://github.com/GDG-on-Campus-IPB-University/ipb-community-mcp-server.git](https://github.com/GDG-on-Campus-IPB-University/ipb-community-mcp-server.git)
     ```
+    - Jika sudah, buka repository di VS Code
+    - Pilih Terminal > New Terminal
+    - Jalankan perintah
+    ```bash
+    npm install
+    ```
 
-2.  **Set up local mcp client (cth: Claude Desktop)**
+3.  **Set up local mcp client (cth: Claude Desktop)**
     - Install via Website Claude Desktop
     - Download sesuai OS
     - Install
-    - Buka Settings > Developer > Edit Config
+    - Buka Settings > Developer > Edit Config > Buka di VS Code/Text Editor
 
-3.  **Masukkan Konfigurasi Berikut ke Claude**
+4.  **Masukkan Konfigurasi Berikut ke Claude**
     ```bash
     {
         "mcpServers": {
@@ -60,15 +72,16 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
     ```
     - Pastikan merubah kata [ROOT PATH] menjadi folder tempat clone repository
     contoh: Jika repository diletakkan di desktop (WINDOWS: C:\Users\USERNAME\Desktop, MAC: /Users/USERNAME/Desktop)
+    - Simpan
     - Restart Aplikasi Claude Desktop
 
-4.  **Allow MCP**
+5.  **Allow MCP**
     - Pada Bubble Input Chat AI disamping tombol upload file, tekan tombol setting, pastikan ada tools ipb-community-service
     - Jika ada, nyalakan seluruh tools
     - Jika tidak ada, Install tidak berhasil, silahkan ulangi step-step.
 
-5.  **Mulai Chat**
-    Install telah berhasil sepenuhnya, dapat mulai chat/interaksi dengan MCP Tools
+6.  **Mulai Chat**
+    - Install telah berhasil sepenuhnya, dapat mulai chat/interaksi dengan MCP Tools
 
 ---
 
@@ -89,5 +102,3 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
     - Integrasi Dengan Akun Menfess & Komunitas Lainnya di IPB
 
 ---
-
-
