@@ -143,13 +143,13 @@ interface CheckedMemberData {
 function formatMember(member: CheckedMemberData): string {
   return [
       `Nama Lengkap: ${member.nama_lengkap || "Unknown"}`,
-      `Email: ${member.email || "Unknown"}`,
+      `Email: ${member.email || "Secret"}`,
       `Submitted At: ${member.submitted_at ? new Date(member.submitted_at).toLocaleString() : "Unknown"}`,
       `Asal Universitas: ${member.asal_universitas || "Unknown"}`,
       `Fakultas: ${member.fakultas || "Unknown"}`,
       `Program Studi / Departemen: ${member.program_studi_departemen || "Unknown"}`,
       `Instagram: ${member.instagram || "Unknown"}`,
-      `LinkedIn: ${member.linkedin || "Unknown"}`,
+      `LinkedIn: ${member.linkedin || "Secret"}`,
       "---",
   ].join("\n");
 }
