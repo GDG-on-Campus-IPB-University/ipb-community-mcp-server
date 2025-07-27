@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <strong>Version 1.0.0</strong>
+  <strong>Version 1.1.0</strong>
 </p>
 
 ---
