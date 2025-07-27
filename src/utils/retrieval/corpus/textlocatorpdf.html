@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Text Highlighter</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+
+    <style>
+        /* Container for PDF with text layer overlay */
+        .pdf-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Text layer for selection - invisible but selectable */
+        .textLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.2;
+            line-height: 1.0;
+            pointer-events: auto;
+        }
+
+        .textLayer > span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+            user-select: text;
+            pointer-events: auto;
+        }
+
+        /* Highlight rectangles drawn on canvas */
+        .highlight-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Simple loader style */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db; 
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        #pdfCanvas {
+            display: block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 flex flex-col items-center min-h-screen p-4 selection:bg-sky-200 selection:text-sky-900">
+
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-4xl">
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-sky-700">PDF Text Highlighter</h1>
+            <p class="text-slate-600 mt-1">Upload a PDF, search, and navigate highlights.</p>
+        </header>
+
+        <!-- Controls Section -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-end gap-4">
+            <div class="flex-grow">
+                <label for="fileInput" class="block text-sm font-medium text-slate-700 mb-1">Upload PDF:</label>
+                <input type="file" id="fileInput" accept="application/pdf"
+                       class="block w-full text-sm text-slate-500
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-sky-50 file:text-sky-700
+                              hover:file:bg-sky-100
+                              border border-slate-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div class="flex-grow">
+                <label for="searchText" class="block text-sm font-medium text-slate-700 mb-1">Text to Highlight:</label>
+                <div class="flex items-center border border-slate-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500">
+                    <input type="text" id="searchText" placeholder="Enter text..."
+                           class="flex-grow px-3 py-2 border-0 rounded-l-lg focus:outline-none transition duration-150" disabled>
+                    <span id="highlightCount" class="px-3 py-2 text-sm text-slate-600 bg-slate-50 whitespace-nowrap min-w-[70px] text-center">0/0</span>
+                    <button id="prevMatchBtn" title="Previous Match" class="px-3 py-2 text-slate-600 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" disabled>&lt;</button>
+                    <button id="nextMatchBtn" title="Next Match" class="px-3 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors" disabled>&gt;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Viewer Section -->
+        <div id="pdfViewerContainer" class="relative border border-slate-300 rounded-lg shadow-inner bg-slate-50 overflow-auto h-[70vh] sm:h-[80vh] min-h-[500px]">
+            <div id="loader" class="loader hidden"></div>
+            <div id="pdfDisplayArea" class="relative flex justify-center p-4">
+                <div class="pdf-container">
+                    <canvas id="pdfCanvas"></canvas>
+                    <div id="textLayer" class="textLayer"></div>
+                    <svg id="highlightOverlay" class="highlight-overlay" width="0" height="0">
+                        <!-- Highlight rectangles will be drawn here -->
+                    </svg>
+                </div>
+            </div>
+            <div id="messageArea" class="p-4 text-center text-slate-500">
+                <p>Please upload a PDF file to begin.</p>
+            </div>
+        </div>
+
+        <!-- Page Navigation -->
+        <div id="pageNav" class="mt-6 flex justify-between items-center hidden">
+            <button id="prevPage" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 transition duration-150">
+                Previous
+            </button>
+            <span id="pageIndicator" class="text-slate-700 font-medium">Page <span id="currentPageNum">0</span> of <span id="totalPagesNum">0</span></span>
+            <button id="nextPage" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 transition duration-150">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center text-sm text-slate-500">
+        <p>&copy; 2024 PDF Highlighter App. Powered by PDF.js & Tailwind CSS.</p>
+    </footer>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const searchText = document.getElementById('searchText');
+        const pdfCanvas = document.getElementById('pdfCanvas');
+        const textLayerDiv = document.getElementById('textLayer');
+        const highlightOverlay = document.getElementById('highlightOverlay');
+        const messageArea = document.getElementById('messageArea');
+        const loader = document.getElementById('loader');
+        const pageNav = document.getElementById('pageNav');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const currentPageNumSpan = document.getElementById('currentPageNum');
+        const totalPagesNumSpan = document.getElementById('totalPagesNum');
+        const pdfDisplayArea = document.getElementById('pdfDisplayArea');
+        const highlightCountSpan = document.getElementById('highlightCount');
+        const prevMatchBtn = document.getElementById('prevMatchBtn');
+        const nextMatchBtn = document.getElementById('nextMatchBtn');
+
+        // PDF.js and app state
+        let pdfDoc = null;
+        let currentPageNum = 1;
+        let currentScale = 1.5;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let currentPageTextContent = null;
+        let currentViewport = null;
+
+        let highlightMatches = []; // Stores match data with positions
+        let currentMatchIndex = -1;
+
+        function showLoader(show) {
+            loader.classList.toggle('hidden', !show);
+        }
+
+        function showMessage(text, isError = false) {
+            messageArea.innerHTML = `<p class="${isError ? 'text-red-500' : 'text-slate-500'}">${text}</p>`;
+            messageArea.classList.remove('hidden');
+            pdfDisplayArea.classList.add('hidden');
+        }
+
+        function clearMessageAndShowPdf() {
+            messageArea.classList.add('hidden');
+            pdfDisplayArea.classList.remove('hidden');
+        }
+
+        async function renderPage(num) {
+            pageRendering = true;
+            showLoader(true);
+            clearMessageAndShowPdf();
+            
+            // Reset highlights when changing pages
+            highlightMatches = [];
+            currentMatchIndex = -1;
+            clearHighlights();
+
+            try {
+                const page = await pdfDoc.getPage(num);
+                currentViewport = page.getViewport({ scale: currentScale });
+
+                pdfCanvas.height = currentViewport.height;
+                pdfCanvas.width = currentViewport.width;
+                
+                // Update highlight overlay size
+                highlightOverlay.setAttribute('width', currentViewport.width);
+                highlightOverlay.setAttribute('height', currentViewport.height);
+
+                // Render PDF page
+                const renderContext = { 
+                    canvasContext: pdfCanvas.getContext('2d'), 
+                    viewport: currentViewport 
+                };
+                await page.render(renderContext).promise;
+                
+                // Get text content for highlighting and selection
+                currentPageTextContent = await page.getTextContent();
+                
+                // Set up text layer for selection
+                textLayerDiv.innerHTML = '';
+                textLayerDiv.style.width = currentViewport.width + 'px';
+                textLayerDiv.style.height = currentViewport.height + 'px';
+
+                // Wait for text layer to be fully rendered
+                await new Promise((resolve) => {
+                    pdfjsLib.renderTextLayer({
+                        textContentSource: currentPageTextContent,
+                        container: textLayerDiv,
+                        viewport: currentViewport,
+                        textDivs: []
+                    });
+                    // Small delay to ensure DOM is updated
+                    setTimeout(resolve, 100);
+                });
+                
+                // Apply highlights if search text exists
+                applyHighlights();
+
+            } catch (error) {
+                console.error('Error rendering page:', error);
+                showMessage(`Error rendering page ${num}: ${error.message}`, true);
+            } finally {
+                pageRendering = false;
+                showLoader(false);
+                updatePageNav();
+                if (pageNumPending !== null) {
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            }
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function updatePageNav() {
+            if (!pdfDoc) return;
+            pageNav.classList.remove('hidden');
+            currentPageNumSpan.textContent = currentPageNum;
+            totalPagesNumSpan.textContent = pdfDoc.numPages;
+            prevPageBtn.disabled = currentPageNum <= 1;
+            nextPageBtn.disabled = currentPageNum >= pdfDoc.numPages;
+        }
+
+        function clearHighlights() {
+            highlightOverlay.innerHTML = '';
+            updateHighlightCountDisplay();
+        }
+
+        function drawHighlightRect(x, y, width, height, isCurrent = false) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x);
+            rect.setAttribute('y', y);
+            rect.setAttribute('width', width);
+            rect.setAttribute('height', height);
+            rect.setAttribute('fill', isCurrent ? 'rgba(255, 165, 0, 0.7)' : 'rgba(255, 255, 0, 0.5)');
+            rect.setAttribute('stroke', isCurrent ? '#FF8C00' : 'none');
+            rect.setAttribute('stroke-width', isCurrent ? '2' : '0');
+            
+            if (isCurrent) {
+                rect.style.filter = 'drop-shadow(0 0 10px rgba(255,165,0,0.5))';
+            }
+            
+            return rect;
+        }
+
+        function applyHighlights() {
+            const query = searchText.value.trim();
+            clearHighlights();
+
+            if (!query || !currentPageTextContent || !currentViewport) {
+                updateHighlightCountDisplay();
+                return;
+            }
+
+            const queryLower = query.toLowerCase();
+            highlightMatches = [];
+
+            // Find matches in text content
+            currentPageTextContent.items.forEach((textItem, itemIndex) => {
+                const text = textItem.str;
+                const textLower = text.toLowerCase();
+                let startIndex = 0;
+                let matchIndex;
+
+                while ((matchIndex = textLower.indexOf(queryLower, startIndex)) !== -1) {
+                    // Get the transformation matrix
+                    const transform = textItem.transform;
+                    
+                    // Calculate font size from transformation matrix
+                    const fontSize = Math.sqrt(transform[0] * transform[0] + transform[1] * transform[1]);
+                    
+                    // Get base position from transform
+                    const baseX = transform[4];
+                    const baseY = transform[5];
+                    
+                    // Calculate character width (approximate)
+                    const avgCharWidth = textItem.width / text.length;
+                    
+                    // Calculate position of the match within the text
+                    const matchStartX = baseX + (matchIndex * avgCharWidth);
+                    const matchWidth = query.length * avgCharWidth;
+                    
+                    // Calculate Y position (PDF coordinates are bottom-up, so we need to flip)
+                    const matchY = currentViewport.height - baseY - fontSize * 0.2; // Adjust for baseline
+                    const matchHeight = fontSize * 1.1;
+
+                    highlightMatches.push({
+                        x: matchStartX,
+                        y: matchY,
+                        width: matchWidth,
+                        height: matchHeight,
+                        text: text.substring(matchIndex, matchIndex + query.length),
+                        itemIndex: itemIndex,
+                        matchIndex: matchIndex,
+                        fontSize: fontSize
+                    });
+
+                    startIndex = matchIndex + 1;
+                }
+            });
+
+            // Draw all highlights
+            drawAllHighlights();
+
+            if (highlightMatches.length > 0) {
+                currentMatchIndex = 0;
+                focusCurrentMatch();
+            }
+
+            updateHighlightCountDisplay();
+        }
+
+        function drawAllHighlights() {
+            highlightOverlay.innerHTML = '';
+            
+            highlightMatches.forEach((match, index) => {
+                const isCurrent = index === currentMatchIndex;
+                const rect = drawHighlightRect(match.x, match.y, match.width, match.height, isCurrent);
+                highlightOverlay.appendChild(rect);
+            });
+        }
+
+        function focusCurrentMatch() {
+            if (currentMatchIndex >= 0 && currentMatchIndex < highlightMatches.length) {
+                drawAllHighlights(); // Redraw to update current highlight
+                
+                // Scroll to current match
+                const match = highlightMatches[currentMatchIndex];
+                const container = document.getElementById('pdfViewerContainer');
+                const rect = pdfCanvas.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                const scrollX = match.x - container.clientWidth / 2;
+                const scrollY = match.y - container.clientHeight / 2;
+                
+                container.scrollTo({
+                    left: Math.max(0, scrollX),
+                    top: Math.max(0, scrollY),
+                    behavior: 'smooth'
+                });
+            }
+            updateHighlightCountDisplay();
+        }
+
+        function updateHighlightCountDisplay() {
+            const totalMatches = highlightMatches.length;
+            if (totalMatches > 0) {
+                highlightCountSpan.textContent = `${currentMatchIndex + 1}/${totalMatches}`;
+            } else {
+                highlightCountSpan.textContent = `0/0`;
+            }
+            prevMatchBtn.disabled = !(currentMatchIndex > 0);
+            nextMatchBtn.disabled = !(currentMatchIndex < totalMatches - 1);
+        }
+
+        async function handleFileChange(e) {
+            const file = e.target.files[0];
+            if (!file || file.type !== 'application/pdf') {
+                showMessage('Please select a valid PDF file.', true);
+                searchText.disabled = true;
+                clearHighlights();
+                pageNav.classList.add('hidden');
+                pdfDoc = null; 
+                pdfCanvas.getContext('2d').clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+                textLayerDiv.innerHTML = '';
+                return;
+            }
+
+            showLoader(true);
+            searchText.disabled = false;
+            clearMessageAndShowPdf(); 
+            clearHighlights();
+
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                try {
+                    const typedarray = new Uint8Array(this.result);
+                    pdfDoc = await pdfjsLib.getDocument({ 
+                        data: typedarray, 
+                        enableXfa: true 
+                    }).promise;
+                    currentPageNum = 1;
+                    renderPage(currentPageNum);
+                } catch (error) {
+                    console.error('Error loading PDF:', error);
+                    showMessage(`Error loading PDF: ${error.message}`, true);
+                    pdfDoc = null;
+                    searchText.disabled = true;
+                    clearHighlights();
+                    pageNav.classList.add('hidden');
+                } finally {
+                    showLoader(false);
+                }
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // Event Listeners
+        fileInput.addEventListener('change', handleFileChange);
+        searchText.addEventListener('input', applyHighlights);
+
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPageNum <= 1) return;
+            currentPageNum--;
+            queueRenderPage(currentPageNum); 
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            if (!pdfDoc || currentPageNum >= pdfDoc.numPages) return;
+            currentPageNum++;
+            queueRenderPage(currentPageNum); 
+        });
+
+        prevMatchBtn.addEventListener('click', () => {
+            if (currentMatchIndex > 0) {
+                currentMatchIndex--;
+                focusCurrentMatch();
+            }
+        });
+
+        nextMatchBtn.addEventListener('click', () => {
+            if (currentMatchIndex < highlightMatches.length - 1) {
+                currentMatchIndex++;
+                focusCurrentMatch();
+            }
+        });
+
+        // Initial state
+        showMessage('Please upload a PDF file to begin.');
+        pdfDisplayArea.classList.add('hidden');
+        updateHighlightCountDisplay(); 
+
+    </script>
+</body>
+</html>

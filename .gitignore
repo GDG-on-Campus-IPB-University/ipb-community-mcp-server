@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+
+# local env files
+.env*.local
+.env
+
+# preprocess retrieval
+/src/utils/retrieval/latest-semantic-search.ts
+/src/utils/retrieval/test-semantic-search.js
+/build/utils/retrieval/latest-semantic-search.js

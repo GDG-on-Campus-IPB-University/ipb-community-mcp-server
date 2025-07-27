@@ -1,0 +1,38 @@
+{
+  "name": "ipb-community-mcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "weather": "./build/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && copyfiles -u 1 \"src/utils/retrieval/vectorstore/**/*\" build && chmod +x build/index.js",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@huggingface/transformers": "^3.5.2",
+    "@langchain/community": "^0.3.45",
+    "@modelcontextprotocol/sdk": "^1.11.3",
+    "dotenv": "^16.5.0",
+    "faiss-node": "^0.5.1",
+    "langchain": "^0.3.27",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.3.31",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "copyfiles": "^2.4.1",
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "build"
+  ]
+}
