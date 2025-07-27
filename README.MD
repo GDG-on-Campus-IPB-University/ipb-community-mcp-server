@@ -52,7 +52,7 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
             "ipb-community": {
                 "command": "node",
                 "args": [
-                    "[ROOT PATH]/ipb-community-mcp/build/index.js"
+                    "[ROOT PATH]/ipb-community-mcp-server/build/index.js"
                 ]
             }
         }
