@@ -1,4 +1,4 @@
-const mainURL = "https://web-gdgoc-ipb.vercel.app/";
+const mainURL = "https://gdgipb.site/";
 export async function makeGDGOCAPIRequest(url, options) {
     const { method = "GET", body } = options || {};
     let token = null;

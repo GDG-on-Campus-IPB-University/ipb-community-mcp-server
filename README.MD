@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://web-gdgoc-ipb.vercel.app/assets/images/gdgoc.png" alt="GDGOC IPB Logo" width="150"/>
+  <img src="https://gdgipb.site/assets/images/gdgoc.png" alt="GDGOC IPB Logo" width="150"/>
 </p>
 
 <h1 align="center">
@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <strong>Version 1.1.3</strong>
+  <strong>Version 1.2.0</strong>
 </p>
 
 ---
