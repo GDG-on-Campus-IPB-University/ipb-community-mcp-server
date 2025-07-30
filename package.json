@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "git pull && npm install && npm run build",
     "build": "tsc && copyfiles -u 1 \"src/utils/retrieval/vectorstore/**/*\" build && chmod +x build/index.js",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
