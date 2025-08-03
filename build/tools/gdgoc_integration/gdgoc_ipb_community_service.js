@@ -90,7 +90,11 @@ export let gdgoc_ipb_community_service_add_member = async (instagram, nama_lengk
             content: [
                 {
                     type: "text",
-                    text: `No member information found for GDGOC IPB.  Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.`,
+                    text: `Error Occured.  
+                    FAQ: Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.
+                    Additional Error Info:
+                    ${formattedMembers}
+                    `,
                 },
             ],
             isError: true,
