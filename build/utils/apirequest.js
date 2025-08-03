@@ -27,6 +27,7 @@ export async function makeGDGOCAPIRequest(url, options) {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x_authorization': `Bearer ${token}`,
     };
     try {
         const response = await fetch(`${mainURL}/api/protected/${url}`, {
