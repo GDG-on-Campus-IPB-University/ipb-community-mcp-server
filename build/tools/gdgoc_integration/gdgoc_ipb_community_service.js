@@ -64,7 +64,10 @@ export let gdgoc_ipb_community_service_check_member = async (instagram, nama_len
             content: [
                 {
                     type: "text",
-                    text: `No member information found for GDGOC IPB.`,
+                    text: `Error Occured. Tidak ada data member.  
+          FAQ: Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.
+          Additional Error Info:
+          ${formattedMembers}`,
                 },
             ],
             isError: true,
@@ -112,6 +115,7 @@ function formatMember(member) {
         `Instagram: ${member.instagram || "Unknown"}`,
         `LinkedIn: ${member.linkedin || "Secret"}`,
         "---",
+        "REGISTRASI BERHASIL, CHECK EMAIL UNTUK MELIHAT LINK VERIFIKASI"
     ].join("\n");
 }
 async function fetchAndFormatMember(apiUrl, body) {
@@ -123,8 +127,9 @@ async function fetchAndFormatMember(apiUrl, body) {
         return fetchResponse.data.map(formatMember);
     }
     else {
-        console.error("Failed to fetch and format member data.");
-        return null;
+        return [`Error Occured.  
+      FAQ: Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.
+      `, `Additional Error Info: ${JSON.stringify(fetchResponse)}`];
     }
 }
 async function fetchAndFormatAddMember(apiUrl, body) {
@@ -132,7 +137,7 @@ async function fetchAndFormatAddMember(apiUrl, body) {
         method: "POST",
         body,
     });
-    if (fetchResponse?.error) {
+    if (fetchResponse?.error != null) {
         return [JSON.stringify(fetchResponse)];
     }
     if (fetchResponse?.success && fetchResponse.data) {
@@ -142,6 +147,8 @@ async function fetchAndFormatAddMember(apiUrl, body) {
         return data.map(formatMember);
     }
     else {
-        return ["Unexpected ERROR Occured | Please contact admin @gdgoc.ipb"];
+        return [`Error Occured.  
+    FAQ: Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.
+    `, `Additional Error Info: ${JSON.stringify(fetchResponse)}`];
     }
 }

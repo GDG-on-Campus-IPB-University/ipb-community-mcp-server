@@ -1,4 +1,5 @@
-const mainURL = "https://gdgipb.site/"
+// const mainURL = "https://gdgipb.site/"
+const mainURL = "http://localhost:3000/"
 
 export interface GDGOCIPB_WEB_API_RESPONSE<T = any> {
     success: boolean;
@@ -38,6 +39,7 @@ export async function makeGDGOCAPIRequest<T>(
 
   } catch (error) {
     console.error("Error fetching authentication token:", error);
+    throw new Error(`Failed to fetch token: ${error}`);
     return null; 
   }
 
@@ -62,8 +64,9 @@ export async function makeGDGOCAPIRequest<T>(
 
     return (await response.json()) as T;
   } catch (error) {
-    console.error("Error making API request:", error);
-    return null;
+    throw new Error(`API request failed: ${error}`);
+    // console.error("Error making API request:", error);
+    // return null;
   }
 }
 
@@ -80,7 +83,8 @@ export async function makeSimpleGETFetchRequest<T>(url: string)
 
   } catch (error) {
       console.error("Error fetching data:", error);
-      return null; 
+      throw new Error(`API request failed: ${error}`);
+      // return null; 
   }
 }
 

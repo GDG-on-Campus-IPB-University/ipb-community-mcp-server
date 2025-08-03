@@ -1,8 +1,5 @@
 import { FaissStore } from "@langchain/community/vectorstores/faiss";
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Document } from "langchain/document";
 import { fileURLToPath } from "url";
 import path from "path";
