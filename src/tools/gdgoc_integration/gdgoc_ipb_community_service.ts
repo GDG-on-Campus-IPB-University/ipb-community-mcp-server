@@ -121,7 +121,10 @@ export let gdgoc_ipb_community_service_add_member = async (instagram: string, na
       content: [
         {
           type: "text",
-          text: `No member information found for GDGOC IPB.`,
+          text: `Error Occured.  
+          FAQ: Jika sudah daftar, coba cek email. Jika masih tidak ada, coba kontak admin.
+          Additional Error Info:
+          ${formattedMembers}`,
         },
       ],
       isError: true,
@@ -186,6 +189,6 @@ async function fetchAndFormatAddMember(
       : [fetchResponse.data];
     return data.map(formatMember);
   } else {
-    return ["User with similar data already exist. Please contact admin at @gdgoc.ipb"];
+    return [JSON.stringify(fetchResponse)];
   }
 }
