@@ -45,6 +45,7 @@ export async function makeGDGOCAPIRequest<T>(
     'Accept': 'application/json',
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
+    'x_authorization': `Bearer ${token}`,
   };
 
   try {
