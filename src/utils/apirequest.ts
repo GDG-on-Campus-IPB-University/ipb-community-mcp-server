@@ -1,5 +1,4 @@
-// const mainURL = "https://gdgipb.site/"
-const mainURL = "http://localhost:3000/"
+const mainURL = "https://gdgipb.site/"
 
 export interface GDGOCIPB_WEB_API_RESPONSE<T = any> {
     success: boolean;

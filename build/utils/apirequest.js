@@ -1,5 +1,4 @@
-// const mainURL = "https://gdgipb.site/"
-const mainURL = "http://localhost:3000/";
+const mainURL = "https://gdgipb.site/";
 export async function makeGDGOCAPIRequest(url, options) {
     const { method = "GET", body } = options || {};
     let token = null;
