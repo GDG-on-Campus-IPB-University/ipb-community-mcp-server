@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <strong>Version 1.2.9</strong>
+  <strong>Version 1.3.0</strong>
 </p>
 
 ---
@@ -42,7 +42,7 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
 
 2.  **Clone Repositori**
     ```bash
-    git clone [https://github.com/GDG-on-Campus-IPB-University/ipb-community-mcp-server.git](https://github.com/GDG-on-Campus-IPB-University/ipb-community-mcp-server.git)
+    git clone https://github.com/GDG-on-Campus-IPB-University/ipb-community-mcp-server.git
     ```
     - Jika sudah, buka repository di VS Code
     - Pilih Terminal > New Terminal
@@ -82,6 +82,12 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
 
 6.  **Mulai Chat**
     - Install telah berhasil sepenuhnya, dapat mulai chat/interaksi dengan MCP Tools
+
+7.  **Perbarui Kode Jika Ada Update**
+    - Dapat memperbarui kode dengan run 
+    ```bash
+    npm run update
+    ```
 
 ---
 

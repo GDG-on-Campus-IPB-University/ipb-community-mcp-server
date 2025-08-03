@@ -17,7 +17,7 @@ export let gdgoc_ipb_community_service_tool = [
     },
     {
         name: "get-gdgoc-ipb-community-add-member",
-        description: `Get Google Developer Group on Campus IPB Member Registration. | pastikan sudah bergabung menjadi registered member di GDGOC IPB di Google Community Platform`,
+        description: `Get Google Developer Group on Campus IPB Member Registration.`,
         inputSchema: {
             type: "object",
             properties: {
@@ -30,7 +30,7 @@ export let gdgoc_ipb_community_service_tool = [
                 fakultas: { type: "string", description: "Fakultas User" },
                 program_studi_departemen: { type: "string", description: "Program Studi / Departemen User" },
                 tahun_angkatan: { type: "string", description: "Tahun Angkatan (format: 4-digit year, e.g., 2025)" },
-                gdg_join: { type: "boolean", description: "Apakah sudah bergabung dengan chapter GDG on Campus IPB University?" },
+                gdg_join: { type: "boolean", description: "Apakah pernah bergabung dengan GDG chapter sebelumnya?" },
                 other_community: { type: "string", description: "Komunitas lain yang pernah diikuti (optional)" },
                 motivasi: { type: "string", description: "Motivasi untuk bergabung (10–255 karakter)" },
                 harapan: { type: "string", description: "Harapan terhadap komunitas (10–255 karakter)" },
