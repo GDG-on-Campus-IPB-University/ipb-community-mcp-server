@@ -88,6 +88,7 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini secara lokal.
     ```bash
     npm run update
     ```
+    - Jika gagal, dapat melakukan dari step 1 kembali
 
 ---
 
