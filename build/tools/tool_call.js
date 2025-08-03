@@ -88,7 +88,7 @@ export async function handleToolCall(name, args) {
             }
         case "get-gdgoc-ipb-community-add-member":
             try {
-                let data = await gdgoc_ipb_community_service_add_member(args.instagram, args.nama_lengkap, args.gdg_profile, args.student_number, args.asal_universitas, args.fakultas, args.program_studi_departemen, args.tahun_angkatan, args.gdg_join, args.other_community, args.motivasi, args.harapan, args.kontribusi, args.toc, args.email);
+                let data = await gdgoc_ipb_community_service_add_member(args.instagram, args.linkedin, args.nama_lengkap, args.gdg_profile, args.student_number, args.asal_universitas, args.fakultas, args.program_studi_departemen, args.tahun_angkatan, args.gdg_join, args.other_community, args.motivasi, args.harapan, args.kontribusi, args.toc, args.email);
                 return {
                     content: [{
                             type: "text",

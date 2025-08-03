@@ -24,6 +24,7 @@ export let gdgoc_ipb_community_service_tool: Tool[] = [
       type: "object",
       properties: {
         instagram: { type: "string", description: "Instagram profile username (e.g. @gdgoc.ipb)" },
+        linkedin: { type: "string", description: "Linked profile link (e.g. linkedin.com/xxxxx)" },
         nama_lengkap: { type: "string", description: "Nama Lengkap User" },
         gdg_profile: { type: "string", description: "Link to GDG profile (must start with https://gdg.community.dev/u/)" },
         student_number: { type: "string", description: "Nomor Induk Mahasiswa atau Student Number" },
@@ -39,7 +40,7 @@ export let gdgoc_ipb_community_service_tool: Tool[] = [
         toc: { type: "boolean", description: "Persetujuan terhadap Terms and Conditions (harus true)" },
         email: { type: "string", description: "Email User" }
       },
-      required: [ "instagram", "nama_lengkap", "gdg_profile", "student_number", "asal_universitas", "fakultas", 
+      required: [ "instagram", "linkedin", "nama_lengkap", "gdg_profile", "student_number", "asal_universitas", "fakultas", 
         "program_studi_departemen", "tahun_angkatan", "gdg_join", "motivasi", "harapan", "kontribusi", "toc", "email" ]
     },
   },
@@ -55,6 +56,7 @@ interface MemberCheckInput {
 
 interface MemberAddInput {
   instagram: string;
+  linkedin: string;
   nama_lengkap: string;
   gdg_profile: string;
   student_number: string;
@@ -99,11 +101,11 @@ export let gdgoc_ipb_community_service_check_member = async (instagram: string, 
   }
 };
 
-export let gdgoc_ipb_community_service_add_member = async (instagram: string, nama_lengkap: string, gdg_profile: string, student_number: string, asal_universitas: string, fakultas: string, 
+export let gdgoc_ipb_community_service_add_member = async (instagram: string, linkedin: string, nama_lengkap: string, gdg_profile: string, student_number: string, asal_universitas: string, fakultas: string, 
   program_studi_departemen: string, tahun_angkatan: string, gdg_join: boolean, other_community: string | undefined, motivasi: string, harapan: string, kontribusi: string, toc: true, email: string): Promise<CallToolResult> => {
   
   let APIUrl = "registration/add-member";
-  let body = { instagram, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email } as MemberAddInput;
+  let body = { instagram, linkedin, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email } as MemberAddInput;
   let formattedMembers = await fetchAndFormatAddMember(APIUrl, body);
 
   if (formattedMembers && formattedMembers.length > 0) {

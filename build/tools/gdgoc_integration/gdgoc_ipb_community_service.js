@@ -22,6 +22,7 @@ export let gdgoc_ipb_community_service_tool = [
             type: "object",
             properties: {
                 instagram: { type: "string", description: "Instagram profile username (e.g. @gdgoc.ipb)" },
+                linkedin: { type: "string", description: "Linked profile link (e.g. linkedin.com/xxxxx)" },
                 nama_lengkap: { type: "string", description: "Nama Lengkap User" },
                 gdg_profile: { type: "string", description: "Link to GDG profile (must start with https://gdg.community.dev/u/)" },
                 student_number: { type: "string", description: "Nomor Induk Mahasiswa atau Student Number" },
@@ -37,7 +38,7 @@ export let gdgoc_ipb_community_service_tool = [
                 toc: { type: "boolean", description: "Persetujuan terhadap Terms and Conditions (harus true)" },
                 email: { type: "string", description: "Email User" }
             },
-            required: ["instagram", "nama_lengkap", "gdg_profile", "student_number", "asal_universitas", "fakultas",
+            required: ["instagram", "linkedin", "nama_lengkap", "gdg_profile", "student_number", "asal_universitas", "fakultas",
                 "program_studi_departemen", "tahun_angkatan", "gdg_join", "motivasi", "harapan", "kontribusi", "toc", "email"]
         },
     },
@@ -70,9 +71,9 @@ export let gdgoc_ipb_community_service_check_member = async (instagram, nama_len
         };
     }
 };
-export let gdgoc_ipb_community_service_add_member = async (instagram, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email) => {
+export let gdgoc_ipb_community_service_add_member = async (instagram, linkedin, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email) => {
     let APIUrl = "registration/add-member";
-    let body = { instagram, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email };
+    let body = { instagram, linkedin, nama_lengkap, gdg_profile, student_number, asal_universitas, fakultas, program_studi_departemen, tahun_angkatan, gdg_join, other_community, motivasi, harapan, kontribusi, toc, email };
     let formattedMembers = await fetchAndFormatAddMember(APIUrl, body);
     if (formattedMembers && formattedMembers.length > 0) {
         return {
@@ -131,6 +132,9 @@ async function fetchAndFormatAddMember(apiUrl, body) {
         method: "POST",
         body,
     });
+    if (fetchResponse?.error) {
+        return [JSON.stringify(fetchResponse)];
+    }
     if (fetchResponse?.success && fetchResponse.data) {
         const data = Array.isArray(fetchResponse.data)
             ? fetchResponse.data
@@ -138,6 +142,6 @@ async function fetchAndFormatAddMember(apiUrl, body) {
         return data.map(formatMember);
     }
     else {
-        return [];
+        return ["Unexpected ERROR Occured | Please contact admin @gdgoc.ipb"];
     }
 }

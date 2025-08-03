@@ -57,7 +57,7 @@ export async function makeGDGOCAPIRequest<T>(
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`API request failed: ${response.statusText} - ${errorData.error || ''}`);
+        throw new Error(`API request failed: ${response.statusText} - ${errorData.error || ''} ${JSON.stringify(errorData)}`);
     }
 
     return (await response.json()) as T;
