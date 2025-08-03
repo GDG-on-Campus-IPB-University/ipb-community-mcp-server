@@ -183,12 +183,16 @@ async function fetchAndFormatAddMember(
     body,
   });
 
+  if (fetchResponse?.error){
+    return [JSON.stringify(fetchResponse)];
+  }
+
   if (fetchResponse?.success && fetchResponse.data) {
     const data = Array.isArray(fetchResponse.data)
       ? fetchResponse.data
       : [fetchResponse.data];
     return data.map(formatMember);
   } else {
-    return [JSON.stringify(fetchResponse)];
+    return ["Unexpected ERROR Occured | Please contact admin @gdgoc.ipb"];
   }
 }

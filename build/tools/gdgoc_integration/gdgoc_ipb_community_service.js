@@ -138,6 +138,6 @@ async function fetchAndFormatAddMember(apiUrl, body) {
         return data.map(formatMember);
     }
     else {
-        return [JSON.stringify(fetchResponse)];
+        return [];
     }
 }
